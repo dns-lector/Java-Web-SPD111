@@ -20,7 +20,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
         "startingTop": 		'4%',	// Starting top offset
         "endingTop": 		'10%'	// Ending top offset
     });
+    checkAuth();
 });
+
+function getContext() {
+    return window.location.pathname.split('/')[1];
+}
 
 function authButtonClick(e) {
     const emailInput = document.querySelector('input[name="auth-email"]');
@@ -29,11 +34,35 @@ function authButtonClick(e) {
     if( ! passwordInput ) { throw "'auth-password' not found" ; }
 
     // console.log( emailInput.value, passwordInput.value ) ;
-    fetch(`/auth?email=${emailInput.value}&password=${passwordInput.value}`, {
-        method: 'PATCH'
+    fetch(`/${getContext()}/auth?email=${emailInput.value}&password=${passwordInput.value}`, {
+        method: 'GET'
     })
         .then( r => r.json() )
-        .then( console.log ) ;
+        .then( j => {
+            if( j.data == null || typeof j.data.token == "undefined" ) {
+                document.getElementById("modal-auth-message").innerText = "У вході відмовлено";
+            }
+            else {
+                // авторизація токенами передбачає їх збереження з метою подальшого використання
+                // Для того щоб токени були доступні після перезавантаження їх вміщують
+                // до постійного сховища браузера - localStorage ...
+                localStorage.setItem("auth-token", j.data.token);
+                window.location.reload();
+            }
+        } ) ;
+}
+
+function checkAuth() {
+    // ... при завантаженні сторінки перевіряємо наявність даних автентифікації у localStorage
+    const authToken = localStorage.getItem("auth-token");
+    if( authToken ) {
+        // перевіряємо токен на валідність і одержуємо дані про користувача
+        fetch(`/${getContext()}/auth?token=${authToken}`, {
+            method: 'POST'
+        })
+            .then( r => r.json() )
+            .then( console.log );
+    }
 }
 
 function signupButtonClick(e) {
@@ -94,3 +123,11 @@ function signupButtonClick(e) {
             }*/
         } ) ;
 }
+/*
+Д.З. Реалізувати повідомлення про успішну реєстрацію користувача
+Якщо реєстрація повертає помилку, то вивести її у складі сторінки
+реєстрації та залишити введені на формі дані (окрім паролів, їх
+стерти)
+Якщо повернення успішне, то видати вітання та перейти на домашню
+сторінку (закрити форму реєстрації)
+ */
