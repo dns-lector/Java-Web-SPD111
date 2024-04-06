@@ -19,7 +19,7 @@ public class UserDao {
     public User getUserByToken( String token ) {
         String sql = "SELECT t.*, u.* " +
                 "FROM Tokens t JOIN Users u ON t.user_id = u.user_id " +
-                "WHERE t.token_id = ? AND t.token_expires > CURRENT_TIMESTAMP " +
+                "WHERE t.token_id = ?  " +  // AND t.token_expires > CURRENT_TIMESTAMP
                 "LIMIT 1";
         try( PreparedStatement prep = dbService.getConnection().prepareStatement(sql) ) {
             prep.setString( 1, token ) ;
@@ -40,7 +40,7 @@ public class UserDao {
             String token = UUID.randomUUID().toString() ;
             prep.setString( 1, token );
             prep.setString( 2, user.getId().toString() );
-            prep.setTimestamp( 3, new Timestamp( new java.util.Date().getTime() + 60 * 5 ) );   // + 5 хв
+            prep.setTimestamp( 3, new Timestamp( new java.util.Date().getTime() + 60 * 5 * 1000 ) );   // + 5 хв
             prep.executeUpdate();
             return token;
         }

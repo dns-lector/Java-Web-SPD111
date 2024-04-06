@@ -25,7 +25,7 @@
             <a href="<%=context%>/" class="brand-logo left">Logo</a>
             <ul id="nav-mobile" class="right">
                 <li><a href="<%=context%>/cart"><i class="material-icons prefix">shopping_cart</i></a></li>
-                <li><a href="#auth-modal" class="modal-trigger"><i class="material-icons">key</i></a></li><!-- Modal Trigger -->
+                <li data-auth="avatar"><a href="#auth-modal" class="modal-trigger"><i class="material-icons">key</i></a></li><!-- Modal Trigger -->
                 <li><a href="<%=context%>/signup"><i class="material-icons">person_add</i></a></li>
             </ul>
         </div>
